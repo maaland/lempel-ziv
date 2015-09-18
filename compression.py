@@ -3,7 +3,7 @@ __author__ = 'Marius'
 from kdprims import read_message_from_file, calc_char_freqs
 from abc import abstractmethod
 import PythonLabs.BitLab as btl
-
+import math
 
 
 
@@ -113,6 +113,26 @@ class Huffcoder(Coder):
         print("Compression fraction: " + str(factor) )
 
 
+class LempelZiv(Coder):
+
+
+    def encode(self, source):
+        slen = len(source)
+        target = []
+        target[0] = source[0]
+        LT = { None : 0 , source[0] : 1}
+        size = 2
+        currloc = 1
+        while currloc < slen:
+            [oldseg, newbit] = self.findNextSegment(source, currloc, LT)
+            bitlen = [math.log(size, 2)]
+            index = LT.get(oldseg)
+            index_bits = self.IntegerToBits(index, bitlen)
+            target.append(index_bits + newbit)
+            LT[oldseg + newbit] = index + 1
+            currloc = currloc + len(oldseg) + 1
+            size = size +1
+        return target
 
 
 
@@ -121,6 +141,12 @@ class Huffcoder(Coder):
 
 
 
+    def IntegerToBits(self, index, bitlen):
+        format = '0' + str(bitlen)
+        return '{0:format}'.format(index)
+
+    def findNextSegment(self, source, currloc, LT):
+        pass
 
 
 
