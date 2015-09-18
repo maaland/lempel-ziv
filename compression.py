@@ -94,6 +94,24 @@ class Huffcoder(Coder):
     def decode(self, encoded_msg):
         return btl.huffman_decode(encoded_msg, self.tree)
 
+    def encode_decode_test(self, message):
+        print(message)
+        e = self.encode(message)
+        d = self.decode(e)
+        print(e)
+        print(d)
+        if d == message:
+            print ("The original and decoded messages are equal")
+        else:
+            print ("The original and decoded messages are not equal ")
+        L = len(message)
+        E = len(e)
+        factor = (1- (E/(L*8)))
+        print("M length: " + str(L))
+        print("E length: " + str(E))
+        print("D length: " + str(len(d)))
+        print("Compression fraction: " + str(factor) )
+
 
 
 
