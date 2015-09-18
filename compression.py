@@ -4,6 +4,7 @@ from kdprims import read_message_from_file, calc_char_freqs
 from abc import abstractmethod
 import PythonLabs.BitLab as btl
 import math
+import os
 
 
 
@@ -30,7 +31,7 @@ class Asciicoder(Coder):
         e = ""
         for c in str:
             number = ord(c)
-            binnumber = '{0:08}'.format(number)
+            binnumber = bin(number)[2:].zfill(8)
             e = e + binnumber
         return e
 
@@ -44,16 +45,16 @@ class Asciicoder(Coder):
             while i < 8:
                 binnumber = binnumber + bitlist.pop(0)
                 i = i+1
-            intnumber = int(binnumber, 10)
+            intnumber = int(binnumber, 2)
             d = d + chr(intnumber)
         return d
 
     def encode_decode_test(self, message):
-        print(message)
+        print("Message: " + message)
         e = self.encode(message)
         d = self.decode(e)
-        print(e)
-        print(d)
+        print("Encoded message: " + e)
+        print("Decoded message: "+ d)
         if d == message:
             print ("The original and decoded messages are equal")
         else:
@@ -78,6 +79,7 @@ class Huffcoder(Coder):
         self.frequencies = calc_char_freqs(fid, lc = True)
 
 
+
     def build_tree(self, freqs):
         pq = btl.init_queue(freqs)
         while len(pq) > 1:
@@ -88,6 +90,8 @@ class Huffcoder(Coder):
 
 
     def encode(self, msg):
+        self.prepare('corpus1.txt')
+        self.build_tree(self.frequencies)
         return btl.huffman_encode(msg, self.tree)
 
 
@@ -95,9 +99,11 @@ class Huffcoder(Coder):
         return btl.huffman_decode(encoded_msg, self.tree)
 
     def encode_decode_test(self, message):
-        print(message)
+        print("Message: " + message)
         e = self.encode(message)
         d = self.decode(e)
+        print("Encoded message: " + e.__repr__())
+        print("Decoded message: "+ d.__repr__())
         print(e.__repr__())
         print(d.__repr__())
         if d == message:
@@ -119,20 +125,20 @@ class LempelZiv(Coder):
     def encode(self, source):
         slen = len(source)
         target = []
-        target[0] = source[0]
+        target.append(source[0])
         LT = { "" : 0 , source[0] : 1}
         size = 2
         currloc = 1
         while currloc < slen:
             [oldseg, newbit] = self.findNextSegment(source, currloc, LT)
-            bitlen = [math.log(size, 2)]
+            bitlen = int(math.log(size, 2))
             index = LT.get(oldseg)
             index_bits = self.IntegerToBits(index, bitlen)
             target.append(index_bits + newbit)
-            LT[oldseg + newbit] = index + 1
+            LT[oldseg + newbit] = size
             currloc = currloc + len(oldseg) + 1
             size = size +1
-        return target
+        return "".join(target)
 
     def decode(self, target):
         tlen = len(target)
@@ -141,24 +147,24 @@ class LempelZiv(Coder):
         loc = 1
         size = 2
         while loc < tlen:
-            bitlen = [math.log(size, 2)]
-            index = self.BitsToInteger(target[loc : loc + bitlen])
+            bitlen = int(math.log(size, 2))
+            index = self.BitsToInteger("".join(target[loc : loc + bitlen]))
             seg = LT[index]
             if loc + bitlen < tlen:
                 seg = seg + target[loc + bitlen]
                 size = size + 1
-                LT[size] = seg
+                LT.append(seg)
                 loc = loc + 1
             source = source + seg
             loc = loc + 1
         return source
 
     def encode_decode_test(self, message):
-        print(message)
+        print("Message: " + message)
         e = self.encode(message)
         d = self.decode(e)
-        print(e)
-        print(d)
+        print("Encoded message: "+ e)
+        print("Decoded message: " +d)
         if d == message:
             print ("The original and decoded messages are equal")
         else:
@@ -180,11 +186,10 @@ class LempelZiv(Coder):
 
 
     def IntegerToBits(self, index, bitlen):
-        format = '0' + str(bitlen)
-        return '{0:format}'.format(index)
+        return bin(index)[2:].zfill(bitlen)
 
     def BitsToInteger(self, str):
-        return int(str, 10)
+        return int(str, 2)
 
 
     def findNextSegment(self, source, loc, table):
@@ -202,6 +207,44 @@ class LempelZiv(Coder):
 
 
 
+def Ascii_test(msg='Hello World', filepath=False, lz_flag=False):
+    if filepath == False and msg != None:
+        message = msg
+    elif filepath != False:
+        message = Coder.gen_message_from_file(filepath)
+    else:
+        message = "Hello World"
+    if lz_flag == True:
+        coder1 = Asciicoder()
+        coder2 = LempelZiv()
+        coder1.encode_decode_test(message)
+        coder2.encode_decode_test(coder1.encode(message))
+    else:
+        coder1 = Asciicoder()
+        coder1.encode_decode_test(message)
+
+
+def Huff_test(msg='Hello World', filepath=False, lz_flag=False):
+    if filepath == False and msg != None:
+        message = msg
+    elif filepath != False:
+        message = Coder.gen_message_from_file(filepath)
+    else:
+        message = "Hello World"
+    if lz_flag == True:
+        coder1 = Huffcoder()
+        coder2 = LempelZiv()
+        coder1.encode_decode_test(message)
+        coder2.encode_decode_test(coder1.encode(message).__repr__())
+    else:
+        coder1 = Asciicoder()
+        coder1.encode_decode_test(message)
+
+def LZ_test(msg='00000000000000000000', filepath=False):
+    pass
+
+
+Huff_test("abba", False, True)
 
 
 
