@@ -1,13 +1,13 @@
 __author__ = 'Marius'
 
-from kdprims import read_message_from_file
-import abc
+from kdprims import read_message_from_file, calc_char_freqs
+from abc import abstractmethod
+import PythonLabs.BitLab as btl
+
 
 
 
 class Coder:
-
-    __metaclass__ = abc.ABCMeta
 
 
 
@@ -15,13 +15,14 @@ class Coder:
         message = read_message_from_file(filepath)
         return message
 
-    @abc.abstractmethod
+    @abstractmethod
     def encode_decode_test(self, message):
-      return
+      pass
 
 
 
-class Asciicoder:
+class Asciicoder(Coder):
+
 
 
 
@@ -67,8 +68,36 @@ class Asciicoder:
 
 
 
-ac = Asciicoder()
-ac.encode_decode_test("hello")
+class Huffcoder(Coder):
+
+    def __init__(self):
+        self.frequencies = {}
+        self.bits = ""
+
+    def prepare(self, fid):
+        self.frequencies = calc_char_freqs(fid, lc = True)
+
+
+    def build_tree(self, freqs):
+        pq = btl.init_queue(freqs)
+        while len(pq) > 1:
+            n1 = pq.pop()
+            n2 = pq.pop()
+            pq.insert(btl.Node(n1, n2))
+        self.tree = pq[0]
+
+
+    def encode(self, msg):
+        return btl.huffman_encode(msg, self.tree)
+
+
+    def decode(self, encoded_msg):
+        return btl.huffman_decode(encoded_msg, self.tree)
+
+
+
+
+
 
 
 
