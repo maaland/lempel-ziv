@@ -98,18 +98,18 @@ class Huffcoder(Coder):
         print(message)
         e = self.encode(message)
         d = self.decode(e)
-        print(e)
-        print(d)
+        print(e.__repr__())
+        print(d.__repr__())
         if d == message:
             print ("The original and decoded messages are equal")
         else:
             print ("The original and decoded messages are not equal ")
         L = len(message)
-        E = len(e)
+        E = len(e.__repr__())
         factor = (1- (E/(L*8)))
         print("M length: " + str(L))
         print("E length: " + str(E))
-        print("D length: " + str(len(d)))
+        print("D length: " + str(len(d.__repr__())))
         print("Compression fraction: " + str(factor) )
 
 
@@ -153,7 +153,25 @@ class LempelZiv(Coder):
             loc = loc + 1
         return source
 
-    
+    def encode_decode_test(self, message):
+        print(message)
+        e = self.encode(message)
+        d = self.decode(e)
+        print(e)
+        print(d)
+        if d == message:
+            print ("The original and decoded messages are equal")
+        else:
+            print ("The original and decoded messages are not equal ")
+        L = len(message)
+        E = len(e)
+        factor = (1- (E/(L*8)))
+        print("M length: " + str(L))
+        print("E length: " + str(E))
+        print("D length: " + str(len(d)))
+        print("Compression fraction: " + str(factor) )
+
+
 
 
 
