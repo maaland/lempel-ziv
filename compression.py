@@ -120,7 +120,7 @@ class LempelZiv(Coder):
         slen = len(source)
         target = []
         target[0] = source[0]
-        LT = { None : 0 , source[0] : 1}
+        LT = { "" : 0 , source[0] : 1}
         size = 2
         currloc = 1
         while currloc < slen:
@@ -134,6 +134,26 @@ class LempelZiv(Coder):
             size = size +1
         return target
 
+    def decode(self, target):
+        tlen = len(target)
+        source = target[0]
+        LT = ["", target[0]]
+        loc = 1
+        size = 2
+        while loc < tlen:
+            bitlen = [math.log(size, 2)]
+            index = self.BitsToInteger(target[loc : loc + bitlen])
+            seg = LT[index]
+            if loc + bitlen < tlen:
+                seg = seg + target[loc + bitlen]
+                size = size + 1
+                LT[size] = seg
+                loc = loc + 1
+            source = source + seg
+            loc = loc + 1
+        return source
+
+    
 
 
 
@@ -145,13 +165,17 @@ class LempelZiv(Coder):
         format = '0' + str(bitlen)
         return '{0:format}'.format(index)
 
+    def BitsToInteger(self, str):
+        return int(str, 10)
+
+
     def findNextSegment(self, source, loc, table):
-        seg = None
-        oldseg = None
-        newbit = None
+        seg = ""
+        oldseg = ""
+        newbit = ""
         while table.get(seg, -1) >= 0 :
             if (loc >= len(source)):
-                return [seg, None]
+                return [seg, ""]
             newbit = source[loc]
             loc = loc +1
             oldseg = seg
