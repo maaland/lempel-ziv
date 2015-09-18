@@ -145,8 +145,18 @@ class LempelZiv(Coder):
         format = '0' + str(bitlen)
         return '{0:format}'.format(index)
 
-    def findNextSegment(self, source, currloc, LT):
-        pass
+    def findNextSegment(self, source, loc, table):
+        seg = None
+        oldseg = None
+        newbit = None
+        while table.get(seg, -1) >= 0 :
+            if (loc >= len(source)):
+                return [seg, None]
+            newbit = source[loc]
+            loc = loc +1
+            oldseg = seg
+            seg = seg + newbit
+        return [oldseg, newbit]
 
 
 
