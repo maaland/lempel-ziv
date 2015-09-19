@@ -76,7 +76,7 @@ class Huffcoder(Coder):
         self.bits = ""
 
     def prepare(self, fid):
-        self.frequencies = calc_char_freqs(fid, lc = True)
+        self.frequencies = calc_char_freqs(fid, True)
 
 
 
@@ -111,7 +111,7 @@ class Huffcoder(Coder):
         L = len(message)
         E = len(e.__repr__())
         D = len(d)
-        factor = (1- (E/(L*8)))
+        factor = (1- (E/(L)))
         print("M length: " + str(L))
         print("E length: " + str(E))
         print("D length: " + str(D))
@@ -206,11 +206,12 @@ class LempelZiv(Coder):
 
 
 
-def Ascii_test(msg='Hello World', filepath=False, lz_flag=False):
+def Ascii_test(msg, filepath, lz_flag):
     if filepath == False and msg != None:
         message = msg
     elif filepath != False:
-        message = Coder.gen_message_from_file(filepath)
+        coder = Coder()
+        message = coder.gen_message_from_file(filepath)
     else:
         message = "Hello World"
     if lz_flag == True:
@@ -223,11 +224,12 @@ def Ascii_test(msg='Hello World', filepath=False, lz_flag=False):
         coder1.encode_decode_test(message)
 
 
-def Huff_test(msg='Hello World', filepath=False, lz_flag=False):
+def Huff_test(msg, filepath, lz_flag):
     if filepath == False and msg != None:
         message = msg
     elif filepath != False:
-        message = Coder.gen_message_from_file(filepath)
+        coder = Coder()
+        message = coder.gen_message_from_file(filepath)
     else:
         message = "Hello World"
     if lz_flag == True:
@@ -236,18 +238,27 @@ def Huff_test(msg='Hello World', filepath=False, lz_flag=False):
         coder1.encode_decode_test(message)
         coder2.encode_decode_test(coder1.encode(message).__repr__())
     else:
-        coder1 = Asciicoder()
+        coder1 = Huffcoder()
         coder1.encode_decode_test(message)
 
-def LZ_test(msg='00000000000000000000', filepath=False):
-    pass
+def LZ_test(msg , filepath):
+    if filepath == False and msg != None:
+        message = msg
+    elif filepath != False:
+        coder = Coder()
+        message = coder.gen_message_from_file(filepath)
+    else:
+        message = "00000000000000000000"
+    coder1 = LempelZiv()
+    coder1.encode_decode_test(message)
 
 
-Huff_test("abba", False, True)
-#lz = LempelZiv()
-#e = lz.encode('101000000010001')
-#print (e)
-#print (lz.decode(e))
+
+#Huff_test(None, 'sample3.txt', True)
+#Ascii_test(None, 'sample3.txt', True)
+#Ascii_test("hello", False, True)
+LZ_test(None, 'tumbler_bit.txt')
+
 
 
 
