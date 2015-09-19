@@ -131,7 +131,7 @@ class LempelZiv(Coder):
         currloc = 1
         while currloc < slen:
             [oldseg, newbit] = self.findNextSegment(source, currloc, LT)
-            bitlen = int(math.log(size, 2))
+            bitlen = math.ceil(math.log2(size))
             index = LT.get(oldseg)
             index_bits = self.IntegerToBits(index, bitlen)
             target.append(index_bits + newbit)
@@ -244,7 +244,11 @@ def LZ_test(msg='00000000000000000000', filepath=False):
     pass
 
 
-Huff_test("abba", False, True)
+#Huff_test("abba", False, True)
+lz = LempelZiv()
+e = lz.encode('101000000010001')
+print (e)
+print (lz.decode(e))
 
 
 
