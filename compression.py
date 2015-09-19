@@ -1,6 +1,6 @@
 __author__ = 'Marius'
 
-from kdprims import read_message_from_file, calc_char_freqs
+from kdprims import read_message_from_file, calc_char_freqs, n_strings
 from abc import abstractmethod
 import PythonLabs.BitLab as btl
 import math
@@ -159,11 +159,11 @@ class LempelZiv(Coder):
         return source
 
     def encode_decode_test(self, message):
-        print("Message: " + message)
+        #print("Message: " + message)
         e = self.encode(message)
         d = self.decode(e)
-        print("Encoded message: "+ e)
-        print("Decoded message: " +d)
+        #print("Encoded message: "+ e)
+        #print("Decoded message: " +d)
         if d == message:
             print ("The original and decoded messages are equal")
         else:
@@ -257,7 +257,10 @@ def LZ_test(msg , filepath):
 #Huff_test(None, 'sample3.txt', True)
 #Ascii_test(None, 'sample3.txt', True)
 #Ascii_test("hello", False, True)
-LZ_test(None, 'tumbler_bit.txt')
+LZ_test(None, 'potus_bit.txt')
+#s = n_strings(1000, 'ntnu', "")
+#print(s)
+#Huff_test(s, False, True)
 
 
 
