@@ -103,19 +103,18 @@ class Huffcoder(Coder):
         e = self.encode(message)
         d = self.decode(e)
         print("Encoded message: " + e.__repr__())
-        print("Decoded message: "+ d.__repr__())
-        print(e.__repr__())
-        print(d.__repr__())
+        print("Decoded message: "+ d)
         if d == message:
             print ("The original and decoded messages are equal")
         else:
             print ("The original and decoded messages are not equal ")
         L = len(message)
         E = len(e.__repr__())
+        D = len(d)
         factor = (1- (E/(L*8)))
         print("M length: " + str(L))
         print("E length: " + str(E))
-        print("D length: " + str(len(d.__repr__())))
+        print("D length: " + str(D))
         print("Compression fraction: " + str(factor) )
 
 
@@ -147,8 +146,8 @@ class LempelZiv(Coder):
         loc = 1
         size = 2
         while loc < tlen:
-            bitlen = int(math.log(size, 2))
-            index = self.BitsToInteger("".join(target[loc : loc + bitlen]))
+            bitlen = math.ceil(math.log2(size))
+            index = self.BitsToInteger("".join(target[loc:loc + bitlen]))
             seg = LT[index]
             if loc + bitlen < tlen:
                 seg = seg + target[loc + bitlen]
@@ -156,7 +155,7 @@ class LempelZiv(Coder):
                 LT.append(seg)
                 loc = loc + 1
             source = source + seg
-            loc = loc + 1
+            loc = loc + bitlen
         return source
 
     def encode_decode_test(self, message):
@@ -171,7 +170,7 @@ class LempelZiv(Coder):
             print ("The original and decoded messages are not equal ")
         L = len(message)
         E = len(e)
-        factor = (1- (E/(L*8)))
+        factor = (1- (E/(L)))
         print("M length: " + str(L))
         print("E length: " + str(E))
         print("D length: " + str(len(d)))
@@ -244,11 +243,11 @@ def LZ_test(msg='00000000000000000000', filepath=False):
     pass
 
 
-#Huff_test("abba", False, True)
-lz = LempelZiv()
-e = lz.encode('101000000010001')
-print (e)
-print (lz.decode(e))
+Huff_test("abba", False, True)
+#lz = LempelZiv()
+#e = lz.encode('101000000010001')
+#print (e)
+#print (lz.decode(e))
 
 
 
